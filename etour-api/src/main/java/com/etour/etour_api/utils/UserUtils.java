@@ -54,6 +54,11 @@ public class UserUtils {
                 .accountNonExpired(userEntity.isAccountNonExpired())
                 .accountNonLocked(userEntity.isAccountNonLocked())
                 .enabled(userEntity.isEnabled())
+                .addressLine(userEntity.getAddressEntity().getAddressLine())
+                .city(userEntity.getAddressEntity().getCity())
+                .state(userEntity.getAddressEntity().getState())
+                .country(userEntity.getAddressEntity().getCountry())
+                .zipCode(userEntity.getAddressEntity().getZipCode())
                 .build();
     }
 }

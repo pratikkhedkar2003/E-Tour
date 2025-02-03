@@ -35,12 +35,12 @@ public class AddressEntity extends Auditable {
     @Column(length = 10, nullable = false)
     private String zipCode;
 
-    @OneToOne(targetEntity = PassengerEntity.class, fetch = FetchType.EAGER)
-    @JoinColumn(name = "passenger_id", nullable = false)
+    @OneToOne(targetEntity = UserEntity.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @JsonProperty(value = "passengerId")
-    private PassengerEntity passengerEntity;
+    @JsonProperty(value = "userId")
+    private UserEntity userEntity;
 }
 

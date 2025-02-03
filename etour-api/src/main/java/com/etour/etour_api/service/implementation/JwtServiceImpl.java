@@ -98,8 +98,8 @@ public class JwtServiceImpl extends JwtConfiguration implements JwtService {
     private final TriConsumer<HttpServletResponse, User, TokenType> addCookie = (response, user, type) -> {
         switch (type) {
             case ACCESS -> {
-                var accessToken = createToken(user, Token::getAccess);
-                var cookie = new Cookie(type.getValue(), accessToken);
+                String accessToken = createToken(user, Token::getAccess);
+                Cookie cookie = new Cookie(type.getValue(), accessToken);
                 cookie.setHttpOnly(true);
                 cookie.setSecure(true);
                 cookie.setMaxAge(2 * 60 * 60); // 2 hours
@@ -108,8 +108,8 @@ public class JwtServiceImpl extends JwtConfiguration implements JwtService {
                 response.addCookie(cookie);
             }
             case REFRESH -> {
-                var refreshToken = createToken(user, Token::getRefresh);
-                var cookie = new Cookie(type.getValue(), refreshToken);
+                String refreshToken = createToken(user, Token::getRefresh);
+                Cookie cookie = new Cookie(type.getValue(), refreshToken);
                 cookie.setHttpOnly(true);
                 cookie.setSecure(true);
                 cookie.setMaxAge(6 * 60 * 60); // 6 hours
@@ -131,7 +131,7 @@ public class JwtServiceImpl extends JwtConfiguration implements JwtService {
 
     @Override
     public String createToken(User user, Function<Token, String> tokenFunction) {
-        var token = Token.builder()
+        Token token = Token.builder()
                 .access(buildToken.apply(user, ACCESS))
                 .refresh(buildToken.apply(user, REFRESH))
                 .build();
@@ -162,9 +162,9 @@ public class JwtServiceImpl extends JwtConfiguration implements JwtService {
 
     @Override
     public void removeCookie(HttpServletRequest request, HttpServletResponse response, String cookieName) {
-        var optionalCookie = extractCookie.apply(request, cookieName);
+        Optional<Cookie> optionalCookie = extractCookie.apply(request, cookieName);
         if (optionalCookie.isPresent()) {
-            var cookie = optionalCookie.get();
+            Cookie cookie = optionalCookie.get();
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setMaxAge(0);

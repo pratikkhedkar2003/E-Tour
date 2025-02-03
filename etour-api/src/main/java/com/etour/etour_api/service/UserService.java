@@ -23,7 +23,7 @@ public interface UserService {
     void resetPassword(String email);
     User verifyPasswordKey(String key);
     void updatePassword(String userId, String newPassword, String confirmNewPassword);
-    User updateUser(String userId, String firstName, String middleName, String lastName, String email, String phone, String bio);
+    User updateUser(String userId, String firstName, String middleName, String lastName, String email, String phone, String bio, String addressLine, String city, String state, String country, String zipCode);
     void updateRole(String userId, Role role);
     void toggleAccountExpired(String userId);
     void toggleAccountLocked(String userId);

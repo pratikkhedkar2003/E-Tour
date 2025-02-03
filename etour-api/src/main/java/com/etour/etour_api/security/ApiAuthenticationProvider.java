@@ -2,6 +2,7 @@ package com.etour.etour_api.security;
 
 import com.etour.etour_api.domain.ApiAuthentication;
 import com.etour.etour_api.domain.UserPrincipal;
+import com.etour.etour_api.dto.User;
 import com.etour.etour_api.exception.ApiException;
 import com.etour.etour_api.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +31,11 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        var apiAuthentication = authenticationFunction.apply(authentication);
-        var user = userService.getUserByEmail(apiAuthentication.getEmail());
+        ApiAuthentication apiAuthentication = authenticationFunction.apply(authentication);
+        User user = userService.getUserByEmail(apiAuthentication.getEmail());
         if (user != null) {
-            var userCredential = userService.getUserCredentialById(user.getId());
-            var userPrincipal = new UserPrincipal(user, userCredential);
+            String userCredential = userService.getUserCredentialById(user.getId());
+            UserPrincipal userPrincipal = new UserPrincipal(user, userCredential);
             validAccount.accept(userPrincipal);
             if (encoder.matches(apiAuthentication.getPassword(), userCredential)) {
                 return authenticated(user, userPrincipal.getAuthorities());

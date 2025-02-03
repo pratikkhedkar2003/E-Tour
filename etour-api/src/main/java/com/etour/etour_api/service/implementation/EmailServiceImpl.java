@@ -37,7 +37,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendNewAccountEmail(String name, String email, String key) {
         try {
-            var message = new SimpleMailMessage();
+            SimpleMailMessage message = new SimpleMailMessage();
             message.setSubject(NEW_USER_ACCOUNT_VERIFICATION);
             message.setFrom(fromEmail);
             message.setTo(email);
@@ -53,7 +53,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendPasswordResetEmail(String name, String email, String key) {
         try {
-            var message = new SimpleMailMessage();
+            SimpleMailMessage message = new SimpleMailMessage();
             message.setSubject(PASSWORD_RESET_REQUEST);
             message.setFrom(fromEmail);
             message.setTo(email);

@@ -4,6 +4,7 @@ import com.etour.etour_api.exception.ApiException;
 import com.etour.etour_api.payload.response.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,7 @@ public class RequestUtils {
 
     private static final BiConsumer<HttpServletResponse, Response> writeResponse = (httpServletResponse, response) -> {
         try {
-            var outPutStream = httpServletResponse.getOutputStream();
+            ServletOutputStream outPutStream = httpServletResponse.getOutputStream();
             new ObjectMapper().writeValue(outPutStream, response);
             outPutStream.flush();
         } catch (Exception exception) {
@@ -64,20 +65,20 @@ public class RequestUtils {
 
     public static void handleErrorResponse(HttpServletRequest request, HttpServletResponse response, Exception exception) {
         if (exception instanceof AccessDeniedException) {
-            var apiResponse = getErrorResponse(request, response, exception, FORBIDDEN);
+            Response apiResponse = getErrorResponse(request, response, exception, FORBIDDEN);
             writeResponse.accept(response, apiResponse);
         } else if (exception instanceof InsufficientAuthenticationException) {
-            var apiResponse = getErrorResponse(request, response, exception, UNAUTHORIZED);
+            Response apiResponse = getErrorResponse(request, response, exception, UNAUTHORIZED);
             writeResponse.accept(response, apiResponse);
         } else if (exception instanceof MismatchedInputException) {
-            var apiResponse = getErrorResponse(request, response, exception, BAD_REQUEST);
+            Response apiResponse = getErrorResponse(request, response, exception, BAD_REQUEST);
             writeResponse.accept(response, apiResponse);
         } else if (exception instanceof DisabledException || exception instanceof LockedException || exception instanceof BadCredentialsException ||
                 exception instanceof CredentialsExpiredException || exception instanceof AccountExpiredException || exception instanceof ApiException) {
-            var apiResponse = getErrorResponse(request, response, exception, BAD_REQUEST);
+            Response apiResponse = getErrorResponse(request, response, exception, BAD_REQUEST);
             writeResponse.accept(response, apiResponse);
         } else {
-            var apiResponse = getErrorResponse(request, response, exception, INTERNAL_SERVER_ERROR);
+            Response apiResponse = getErrorResponse(request, response, exception, INTERNAL_SERVER_ERROR);
             writeResponse.accept(response, apiResponse);
         }
     }

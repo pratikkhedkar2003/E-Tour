@@ -53,8 +53,11 @@ public class FilterChainConfiguration {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(PUBLIC_URLS).permitAll()
                         .requestMatchers(OPTIONS).permitAll()
-                        .requestMatchers(DELETE, "/user/delete/**").hasAnyAuthority(ROLE_ADMIN.name())
-                        .requestMatchers(DELETE, "/tour/delete/**").hasAnyAuthority(ROLE_ADMIN.name())
+                        .requestMatchers(POST, POST_PROTECTED_URLS).hasAnyAuthority(ROLE_ADMIN.name())
+                        .requestMatchers(PUT, PUT_PROTECTED_URLS).hasAnyAuthority(ROLE_ADMIN.name())
+                        .requestMatchers(PATCH, PATCH_PROTECTED_URLS).hasAnyAuthority(ROLE_ADMIN.name())
+                        .requestMatchers(DELETE, DELETE_PROTECTED_URLS).hasAnyAuthority(ROLE_ADMIN.name())
+                        .requestMatchers(GET, GET_PROTECTED_URLS).hasAnyAuthority(ROLE_ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .with(apiHttpConfigurer, withDefaults())
@@ -65,14 +68,14 @@ public class FilterChainConfiguration {
 
     @Bean
     public CorsConfigurationSource configurationSource() {
-        var corsConfiguration = new CorsConfiguration();
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedOrigins(of("http://etour.com", "http://localhost:4200", "http://localhost:3000", "http://localhost:5173"));
         corsConfiguration.setAllowedHeaders(asList(ORIGIN, ACCESS_CONTROL_ALLOW_ORIGIN, CONTENT_TYPE, ACCEPT, AUTHORIZATION, X_REQUESTED_WITH, ACCESS_CONTROL_REQUEST_METHOD, ACCESS_CONTROL_REQUEST_HEADERS, ACCESS_CONTROL_ALLOW_CREDENTIALS, FILE_NAME));
         corsConfiguration.setExposedHeaders(asList(ORIGIN, ACCESS_CONTROL_ALLOW_ORIGIN, CONTENT_TYPE, ACCEPT, AUTHORIZATION, X_REQUESTED_WITH, ACCESS_CONTROL_REQUEST_METHOD, ACCESS_CONTROL_REQUEST_HEADERS, ACCESS_CONTROL_ALLOW_CREDENTIALS, FILE_NAME));
         corsConfiguration.setAllowedMethods(asList(GET.name(), POST.name(), PUT.name(), PATCH.name(), DELETE.name(), OPTIONS.name()));
         corsConfiguration.setMaxAge(3600L);
-        var source = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration(BASE_PATH, corsConfiguration);
         return source;
     }

@@ -1,7 +1,9 @@
 package com.etour.etour_api.security;
 
+import com.etour.etour_api.domain.ApiAuthentication;
 import com.etour.etour_api.domain.Token;
 import com.etour.etour_api.domain.TokenData;
+import com.etour.etour_api.dto.User;
 import com.etour.etour_api.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static com.etour.etour_api.constant.ApiConstant.PUBLIC_ROUTES;
 import static com.etour.etour_api.domain.ApiAuthentication.authenticated;
@@ -41,13 +44,13 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
-            var accessToken = jwtService.extractToken(request, ACCESS.getValue());
+            Optional<String> accessToken = jwtService.extractToken(request, ACCESS.getValue());
             if (accessToken.isPresent() && jwtService.getTokenData(accessToken.get(), TokenData::isValid)) {
                 SecurityContextHolder.getContext().setAuthentication(getAuthentication(accessToken.get(), request));
             } else {
-                var refreshToken = jwtService.extractToken(request, REFRESH.getValue());
+                Optional<String> refreshToken = jwtService.extractToken(request, REFRESH.getValue());
                 if (refreshToken.isPresent() && jwtService.getTokenData(refreshToken.get(), TokenData::isValid)) {
-                    var user = jwtService.getTokenData(refreshToken.get(), TokenData::getUser);
+                    User user = jwtService.getTokenData(refreshToken.get(), TokenData::getUser);
                     SecurityContextHolder.getContext().setAuthentication(getAuthentication(jwtService.createToken(user, Token::getAccess), request));
                     jwtService.addCookie(response, user, ACCESS);
                 } else {
@@ -67,7 +70,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     }
 
     private Authentication getAuthentication(String token, HttpServletRequest request) {
-        var authentication = authenticated(jwtService.getTokenData(token, TokenData::getUser), jwtService.getTokenData(token, TokenData::getAuthorities));
+        ApiAuthentication authentication = authenticated(jwtService.getTokenData(token, TokenData::getUser), jwtService.getTokenData(token, TokenData::getAuthorities));
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         return authentication;
     }

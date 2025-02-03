@@ -29,4 +29,9 @@ public class User {
     private boolean accountNonExpired;
     private boolean accountNonLocked;
     private boolean enabled;
+    private String addressLine;
+    private String city;
+    private String state;
+    private String country;
+    private String zipCode;
 }

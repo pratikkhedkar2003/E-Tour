@@ -1,5 +1,6 @@
 package com.etour.etour_api.security;
 
+import com.etour.etour_api.domain.ApiAuthentication;
 import com.etour.etour_api.dto.User;
 import com.etour.etour_api.payload.request.LoginRequest;
 import com.etour.etour_api.payload.response.Response;
@@ -8,6 +9,7 @@ import com.etour.etour_api.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -53,9 +55,9 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         try {
-            var user = new ObjectMapper().configure(AUTO_CLOSE_SOURCE, true).readValue(request.getInputStream(), LoginRequest.class);
+            LoginRequest user = new ObjectMapper().configure(AUTO_CLOSE_SOURCE, true).readValue(request.getInputStream(), LoginRequest.class);
             userService.updateLoginAttempt(user.getEmail(), LOGIN_ATTEMPT);
-            var authentication = unauthenticated(user.getEmail(), user.getPassword());
+            ApiAuthentication authentication = unauthenticated(user.getEmail(), user.getPassword());
             return getAuthenticationManager().authenticate(authentication);
         } catch (Exception exception) {
             log.error(exception.getMessage());
@@ -66,13 +68,13 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
-        var user = (User) authentication.getPrincipal();
+        User user = (User) authentication.getPrincipal();
         userService.updateLoginAttempt(user.getEmail(), LOGIN_SUCCESS);
-        var httpResponse = sendResponse(request, response, user);
+        Response httpResponse = sendResponse(request, response, user);
         response.setContentType(APPLICATION_JSON_VALUE);
         response.setStatus(OK.value());
-        var out = response.getOutputStream();
-        var mapper = new ObjectMapper();
+        ServletOutputStream out = response.getOutputStream();
+        ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(out, httpResponse);
         out.flush();
     }

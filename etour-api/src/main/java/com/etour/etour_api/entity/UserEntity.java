@@ -2,6 +2,7 @@ package com.etour.etour_api.entity;
 
 import com.etour.etour_api.enumeration.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -46,5 +47,9 @@ public class UserEntity extends Auditable {
     private boolean enabled;
     private boolean accountNonExpired;
     private boolean accountNonLocked;
+
+    @OneToOne(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonProperty(value = "address")
+    private AddressEntity addressEntity;
 }
 

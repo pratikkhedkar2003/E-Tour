@@ -25,6 +25,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.List;
 
 import static com.etour.etour_api.utils.RequestUtils.handleErrorResponse;
 import static java.util.stream.Collectors.joining;
@@ -52,8 +53,8 @@ public class HandleException extends ResponseEntityExceptionHandler implements E
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, @NonNull HttpHeaders headers, @NonNull HttpStatusCode statusCode, @NonNull WebRequest webRequest) {
         log.error("handleMethodArgumentNotValid: {}", exception.getMessage());
-        var fieldErrors = exception.getBindingResult().getFieldErrors();
-        var fieldMessage = fieldErrors.stream().map(FieldError::getDefaultMessage).collect(joining(", "));
+        List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
+        String fieldMessage = fieldErrors.stream().map(FieldError::getDefaultMessage).collect(joining(", "));
         return new ResponseEntity<>(handleErrorResponse(fieldMessage, getRootCauseMessage(exception), request, statusCode), statusCode);
     }
 

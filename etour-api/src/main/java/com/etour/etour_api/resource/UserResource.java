@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static com.etour.etour_api.constant.ApiConstant.USER_IMAGE_FILE_STORAGE;
 import static com.etour.etour_api.utils.RequestUtils.getResponse;
@@ -60,14 +61,27 @@ public class UserResource {
     @GetMapping(path = "/profile")
     @PreAuthorize(value = "hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Response> profile(@AuthenticationPrincipal User userPrincipal, HttpServletRequest request) {
-        var user = userService.getUserByUserId(userPrincipal.getUserId());
+        User user = userService.getUserByUserId(userPrincipal.getUserId());
         return ResponseEntity.ok().body(getResponse(request, of("user", user), "Profile retrieved", OK));
     }
 
     @PatchMapping(path = "/update")
     @PreAuthorize(value = "hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Response> update(@AuthenticationPrincipal User userPrincipal, @RequestBody UserRequest userRequest, HttpServletRequest request) {
-        var user = userService.updateUser(userPrincipal.getUserId(), userRequest.getFirstName(), userRequest.getMiddleName(), userRequest.getLastName(), userRequest.getEmail(), userRequest.getPhone(), userRequest.getBio());
+        User user = userService.updateUser(
+                userPrincipal.getUserId(),
+                userRequest.getFirstName(),
+                userRequest.getMiddleName(),
+                userRequest.getLastName(),
+                userRequest.getEmail(),
+                userRequest.getPhone(),
+                userRequest.getBio(),
+                userRequest.getAddressLine(),
+                userRequest.getCity(),
+                userRequest.getState(),
+                userRequest.getCountry(),
+                userRequest.getZipCode()
+        );
         return ResponseEntity.ok().body(getResponse(request, of("user", user), "User updated successfully", OK));
     }
 
@@ -109,7 +123,7 @@ public class UserResource {
     @PatchMapping(path = "/photo")
     @PreAuthorize(value = "hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Response> uploadPhoto(@AuthenticationPrincipal User userPrincipal, @RequestParam(value = "file") MultipartFile file, HttpServletRequest request) {
-        var imageUrl = userService.uploadPhoto(userPrincipal.getUserId(), file);
+        String imageUrl = userService.uploadPhoto(userPrincipal.getUserId(), file);
         return ResponseEntity.ok().body(getResponse(request, of("imageUrl", imageUrl), "Photo updated successfully", OK));
     }
 
@@ -130,7 +144,7 @@ public class UserResource {
 
     @GetMapping(path = "/verify/password")
     public ResponseEntity<Response> verifyPassword(@RequestParam(value = "key") String key, HttpServletRequest request) {
-        var user = userService.verifyPasswordKey(key);
+        User user = userService.verifyPasswordKey(key);
         return ResponseEntity.ok().body(getResponse(request, of("user", user), "Enter new password.", OK));
     }
 
@@ -145,7 +159,7 @@ public class UserResource {
     @GetMapping(path = "/list")
     @PreAuthorize(value = "hasAnyRole('ADMIN')")
     public ResponseEntity<Response> toggleCredentialsExpired(HttpServletRequest request) {
-        var users = userService.getUsers();
+        List<User> users = userService.getUsers();
         return ResponseEntity.ok().body(getResponse(request, of("users", users), "Users retrieved", OK));
     }
 

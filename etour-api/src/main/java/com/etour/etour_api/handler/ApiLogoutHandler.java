@@ -25,8 +25,8 @@ public class ApiLogoutHandler implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        var logoutHandler = new SecurityContextLogoutHandler();
-        logoutHandler.logout(request, response, authentication);
+        new SecurityContextLogoutHandler();
+        new SecurityContextLogoutHandler().logout(request, response, authentication);
         jwtService.removeCookie(request, response, ACCESS.getValue());
         jwtService.removeCookie(request, response, REFRESH.getValue());
     }

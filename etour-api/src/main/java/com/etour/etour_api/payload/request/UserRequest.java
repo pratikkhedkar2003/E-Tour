@@ -29,4 +29,9 @@ public class UserRequest {
     private String password;
     private String phone;
     private String bio;
+    private String addressLine;
+    private String city;
+    private String state;
+    private String country;
+    private String zipCode;
 }
