@@ -21,8 +21,7 @@ public class ApiConstant {
             "/user/register", "/user/verify/account", "/user/login", "/user/resetpassword", "/user/verify/password",
             "/user/resetpassword/reset", "/user/image", "/user/logout", "/tour-service/tour-category/list",
             "/tour-service/tour-category/image", "/tour-service/tour-subcategory/list", "/tour-service/tour-subcategory/tour-category",
-            "/tour-service/tour-subcategory/image", "/tour-service/tour-service/tour/list", "/tour-service/tour-service/tour",
-            "/tour-service/tour/image"
+            "/tour-service/tour-subcategory/image", "/tour-service/tour/list", "/tour-service/tour", "/tour-service/tour/image"
     };
 
     public static final String[] PUBLIC_URLS = {
@@ -30,7 +29,7 @@ public class ApiConstant {
             "/user/verify/password/**", "/user/resetpassword/reset/**", "/user/image/**", "/user/logout/**",
             "/tour-service/tour-category/list/**",  "/tour-service/tour-category/image/**", "/tour-service/tour-subcategory/list/**",
             "/tour-service/tour-subcategory/tour-category/**", "/tour-service/tour-subcategory/image/**", "/tour-service/tour/list/**",
-            "/tour-service/tour/**", "/tour-service/tour/image/**"
+            "/tour-service/tour", "/tour-service/tour/image/**"
     };
 
     public static final String[] POST_PROTECTED_URLS = { "/tour-category/create/**", "/tour-subcategory/create/**", "/tour/create/**" };

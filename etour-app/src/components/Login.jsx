@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { LOGGEDIN, ROLE } from "../constants/cache.key";
+import { LOGGEDIN, ROLE, USER_ID } from "../constants/cache.key";
 import { userAPI } from "../services/UserService";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,6 +37,7 @@ const Login = () => {
   if (isSuccess) {
     localStorage.setItem(LOGGEDIN, "true");
     localStorage.setItem(ROLE, JSON.stringify(data?.data?.user.role));
+    localStorage.setItem(USER_ID, JSON.stringify(data?.data?.user.id));
     dispatch(setLoggedInUser({ userRole: data?.data?.user.role }));
     navigate("/home");
   }

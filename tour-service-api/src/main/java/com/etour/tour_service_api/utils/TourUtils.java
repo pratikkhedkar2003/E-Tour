@@ -1,13 +1,15 @@
 package com.etour.tour_service_api.utils;
 
-import com.etour.tour_service_api.dto.TourCategoryDto;
-import com.etour.tour_service_api.dto.TourSubcategoryDto;
+import com.etour.tour_service_api.dto.*;
 import com.etour.tour_service_api.entity.*;
 import com.etour.tour_service_api.payload.request.ItineraryRequest;
+import com.etour.tour_service_api.payload.request.PassengerRequest;
 import com.etour.tour_service_api.payload.request.TourPriceRequest;
 import com.etour.tour_service_api.payload.request.TourRequest;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -70,6 +72,85 @@ public class TourUtils {
                 .duration(tourRequest.getDuration())
                 .startDate(LocalDate.parse(tourRequest.getStartDate()))
                 .endDate(LocalDate.parse(tourRequest.getEndDate()))
+                .build();
+    }
+
+    public static PassengerEntity createPassengerEntity(PassengerRequest passengerRequest) {
+        return PassengerEntity.builder()
+                .firstName(passengerRequest.getFirstName())
+                .middleName(passengerRequest.getMiddleName())
+                .lastName(passengerRequest.getLastName())
+                .email(passengerRequest.getEmail().isBlank() ? null : passengerRequest.getEmail())
+                .phone(passengerRequest.getPhone())
+                .dateOfBirth(LocalDate.parse(passengerRequest.getDateOfBirth()))
+                .age(passengerRequest.getAge())
+                .gender(passengerRequest.getGender())
+                .passengerType(passengerRequest.getPassengerType())
+                .passengerCost(passengerRequest.getPassengerCost())
+                .build();
+    }
+
+    public static TourBookingDto toTourBookingDto(BookingEntity savedBookingEntity, TourCategoryEntity tourCategoryEntity, TourSubcategoryEntity tourSubcategoryEntity, TourEntity tourEntity, UserEntity userEntity, List<PassengerEntity> savedPassengerEntities) {
+
+        return TourBookingDto.builder()
+                .id(savedBookingEntity.getId())
+                .referenceId(savedBookingEntity.getReferenceId())
+                .bookingDate(savedBookingEntity.getBookingDate().toString())
+                .bookingStatus(savedBookingEntity.getBookingStatus())
+                .totalPrice(savedBookingEntity.getTotalPrice())
+                .categoryName(tourCategoryEntity.getCategoryName())
+                .subCategoryName(tourSubcategoryEntity.getSubCategoryName())
+                .tourId(tourEntity.getTourId())
+                .tourName(tourEntity.getTourName())
+                .description(tourEntity.getDescription())
+                .duration(tourEntity.getDuration())
+                .startDate(tourEntity.getStartDate().toString())
+                .endDate(tourEntity.getEndDate().toString())
+                .user(fromUserEntity(userEntity))
+                .passengers(getPassengerDtoList(savedPassengerEntities))
+                .build();
+
+    }
+
+    private static User fromUserEntity(UserEntity userEntity) {
+        return User.builder()
+                .id(userEntity.getId())
+                .userId(userEntity.getUserId())
+                .firstName(userEntity.getFirstName())
+                .middleName(userEntity.getMiddleName())
+                .lastName(userEntity.getLastName())
+                .email(userEntity.getEmail())
+                .phone(userEntity.getPhone())
+                .bio(userEntity.getBio())
+                .imageUrl(userEntity.getImageUrl())
+                .addressLine(userEntity.getAddressEntity().getAddressLine())
+                .city(userEntity.getAddressEntity().getCity())
+                .state(userEntity.getAddressEntity().getState())
+                .country(userEntity.getAddressEntity().getCountry())
+                .zipCode(userEntity.getAddressEntity().getZipCode())
+                .build();
+    }
+
+    public static List<PassengerDto> getPassengerDtoList(List<PassengerEntity> savedPassengerEntities) {
+        List<PassengerDto> passengerDtoList = new ArrayList<>();
+        for (PassengerEntity passengerEntity : savedPassengerEntities) {
+            passengerDtoList.add(toPassengerDto(passengerEntity));
+        }
+        return  passengerDtoList;
+    }
+
+    public static PassengerDto toPassengerDto(PassengerEntity passengerEntity) {
+        return PassengerDto.builder()
+                .firstName(passengerEntity.getFirstName())
+                .middleName(passengerEntity.getMiddleName())
+                .lastName(passengerEntity.getLastName())
+                .email(passengerEntity.getEmail())
+                .phone(passengerEntity.getPhone())
+                .dateOfBirth(passengerEntity.getDateOfBirth().toString())
+                .age(passengerEntity.getAge())
+                .gender(passengerEntity.getGender())
+                .passengerType(passengerEntity.getPassengerType())
+                .passengerCost(passengerEntity.getPassengerCost())
                 .build();
     }
 

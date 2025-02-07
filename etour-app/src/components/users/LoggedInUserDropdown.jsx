@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { userAPI } from "../../services/UserService";
-import { LOGGEDIN, ROLE } from "../../constants/cache.key";
+import { LOGGEDIN, ROLE, USER_ID } from "../../constants/cache.key";
 import { useDispatch } from "react-redux";
 import { setLoggedOutUser } from "../../store/features/user/loggedInUseSlice";
 
@@ -15,6 +15,7 @@ const LoggedInUserDropdown = () => {
   const onLogout = async () => {
     localStorage.removeItem(LOGGEDIN);
     localStorage.removeItem(ROLE);
+    localStorage.removeItem(USER_ID);
     await logout();
     dispatch(setLoggedOutUser({ userRole: "" }));
     navigate("/home");

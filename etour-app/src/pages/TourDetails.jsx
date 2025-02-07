@@ -11,15 +11,20 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
+import { LOGGEDIN, USER_ID } from "../constants/cache.key";
+import { toastError, toastWarning } from "../services/ToastService";
+import { tourAPI } from "../services/TourService";
 
 const reviewSchema = z.object({
   reviewText: z.string().min(1, "Review is required"),
 });
 
 const TourDetails = () => {
+  const isLoggedIn = JSON.parse(localStorage.getItem(LOGGEDIN)) || false;
   const { tourId } = useParams();
+  const navigate = useNavigate();
 
   const tours = useSelector((store) => store.toursSlice);
 
@@ -45,27 +50,32 @@ const TourDetails = () => {
     getFieldState(fieldName, formState).isTouched &&
     !getFieldState(fieldName, formState).invalid;
 
-  // Book Now Button Handler
   const handleBookNow = () => {
-    console.log("Booking initiated for tour ID: " + tourId);
+    navigate(`/tours/booking/${tourId}`);
   };
 
-  // Handle review form submission
-  const handleSubmitReview = (userReview) => {
-    if (rating < 1 || rating > 5) {
-      alert("Please provide a valid rating (1-5)");
+  const [ addTourReview ] = tourAPI.useAddTourReviewMutation();
+
+  const handleSubmitReview = async (userReview) => {
+    if (!isLoggedIn) {
+      toastError("You are not logged in. Please log in to submit review");
       return;
     }
 
+    if (rating < 1 || rating > 5) {
+      toastWarning("Please provide a valid rating (1-5)");
+      return;
+    }
     const newReview = {
       rating,
       review: userReview.reviewText,
-      reference_id: `TR-REV-${Date.now()}`,
-      tour_id: tourId,
-      user_id: 1, // Assume user_id as 1 for now, you can manage authentication later
+      tourId: +tourId,
+      userId: JSON.parse(localStorage.getItem(USER_ID)) || 0,
     };
 
     console.log("sahfuygcv7ywgc yucrfr7fg", newReview);
+
+    await addTourReview(newReview);
 
     reset();
     setReviews([...reviews, newReview]);
@@ -193,7 +203,7 @@ const TourDetails = () => {
                     <div className="d-flex align-items-center gap-3 mb-3">
                       <FaUserCircle size={40} className="text-secondary" />
                       <div>
-                        <h6 className="mb-0">User {review.user_id}</h6>
+                        <h6 className="mb-0">User {index + 1}</h6>
                         <small className="text-muted">Verified Traveler</small>
                       </div>
                     </div>

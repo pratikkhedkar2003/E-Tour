@@ -1,7 +1,11 @@
 package com.etour.tour_service_api.service;
 
+import com.etour.tour_service_api.dto.TourBookingDto;
 import com.etour.tour_service_api.entity.TourEntity;
+import com.etour.tour_service_api.entity.TourReviewEntity;
+import com.etour.tour_service_api.payload.request.TourBookingRequest;
 import com.etour.tour_service_api.payload.request.TourRequest;
+import com.etour.tour_service_api.payload.request.TourReviewRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -17,4 +21,7 @@ public interface TourService {
     TourEntity uploadTourImage(Long tourId, MultipartFile imageFile);
     List<TourEntity> getAllTours();
     List<TourEntity> getAllToursByTourSubcategoryId(Long tourSubcategoryId);
+    TourReviewEntity createTourReview(TourReviewRequest tourReviewRequest);
+    TourBookingDto createTourBooking(TourBookingRequest tourBookingRequest);
+    TourBookingDto getTourBookingById(Long bookingId);
 }

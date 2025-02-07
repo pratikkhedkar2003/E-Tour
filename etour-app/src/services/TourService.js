@@ -5,7 +5,7 @@ import {
   processError,
   processResponse,
 } from "../utils/requestutils";
-import { httpGet } from "../constants/http";
+import { httpGet, httpPost } from "../constants/http";
 
 export const tourAPI = createApi({
   reducerPath: "tourAPI",
@@ -25,6 +25,32 @@ export const tourAPI = createApi({
       transformResponse: processResponse,
       transformErrorResponse: processError,
       providesTags: () => ["tour"],
-    })
+    }),
+    addTourReview: builder.mutation({
+      query: (newReview) => ({
+        url: "/review/create",
+        method: httpPost,
+        body: newReview,
+      }),
+      transformResponse: processResponse,
+      transformErrorResponse: processError,
+    }),
+    createTourBooking: builder.mutation({
+      query: (newBooking) => ({
+        url: "/booking/create",
+        method: httpPost,
+        body: newBooking,
+      }),
+      transformResponse: processResponse,
+      transformErrorResponse: processError,
+    }),
+    fetchTourBookingById: builder.query({
+      query: (bookingId) => ({
+        url: `/booking/${bookingId}`,
+        method: httpGet,
+      }),
+      transformResponse: processResponse,
+      transformErrorResponse: processError,
+    }),
   }),
 });

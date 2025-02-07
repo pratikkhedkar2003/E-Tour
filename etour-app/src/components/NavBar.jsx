@@ -38,16 +38,6 @@ const NavBar = () => {
               </li>
               <li className="nav-item">
                 <NavLink
-                  to="/tours"
-                  end
-                  className="nav-link"
-                  aria-current="page"
-                >
-                  Tours
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink
                   to="/contact-us"
                   end
                   className="nav-link"

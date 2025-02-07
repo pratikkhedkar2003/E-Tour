@@ -1,15 +1,11 @@
 package com.etour.tour_service_api.service.implementation;
 
-import com.etour.tour_service_api.entity.TourEntity;
-import com.etour.tour_service_api.entity.TourSubcategoryEntity;
+import com.etour.tour_service_api.dto.TourBookingDto;
+import com.etour.tour_service_api.entity.*;
+import com.etour.tour_service_api.enumeration.BookingStatus;
 import com.etour.tour_service_api.exception.ApiException;
-import com.etour.tour_service_api.payload.request.ItineraryRequest;
-import com.etour.tour_service_api.payload.request.TourPriceRequest;
-import com.etour.tour_service_api.payload.request.TourRequest;
-import com.etour.tour_service_api.repository.ItineraryRepository;
-import com.etour.tour_service_api.repository.TourPriceRepository;
-import com.etour.tour_service_api.repository.TourRepository;
-import com.etour.tour_service_api.repository.TourSubCategoryRepository;
+import com.etour.tour_service_api.payload.request.*;
+import com.etour.tour_service_api.repository.*;
 import com.etour.tour_service_api.service.TourService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -39,8 +36,12 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 @Transactional(rollbackOn = Exception.class)
 public class TourServiceImpl implements TourService {
     private final TourRepository tourRepository;
+    private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
+    private final PassengerRepository passengerRepository;
     private final TourPriceRepository tourPriceRepository;
     private final ItineraryRepository itineraryRepository;
+    private final TourReviewRepository tourReviewRepository;
     private final TourSubCategoryRepository tourSubCategoryRepository;
 
     @Override
@@ -71,6 +72,54 @@ public class TourServiceImpl implements TourService {
         return tourRepository.findAllByTourSubcategoryEntity(getTourSubcategoryEntityById(tourSubcategoryId));
     }
 
+    @Override
+    public TourReviewEntity createTourReview(TourReviewRequest tourReviewRequest) {
+        TourEntity tourEntity = getTourEntityById(tourReviewRequest.getTourId());
+        UserEntity userEntity = getUserEntityById(tourReviewRequest.getUserId());
+        TourReviewEntity tourReviewEntity = new TourReviewEntity();
+        tourReviewEntity.setRating(tourReviewRequest.getRating());
+        tourReviewEntity.setReview(tourReviewRequest.getReview());
+        tourReviewEntity.setUserEntity(userEntity);
+        tourReviewEntity.setTourEntity(tourEntity);
+        return tourReviewRepository.save(tourReviewEntity);
+    }
+
+    @Override
+    public TourBookingDto createTourBooking(TourBookingRequest tourBookingRequest) {
+        BookingEntity savedBookingEntity = saveBookingEntity(tourBookingRequest);
+        List<PassengerEntity> savedPassengerEntities = savePassengerEntities(tourBookingRequest.getPassengers(), savedBookingEntity);
+        return toTourBookingDto(
+                savedBookingEntity,
+                savedBookingEntity.getTourEntity().getTourSubcategoryEntity().getTourCategoryEntity(),
+                savedBookingEntity.getTourEntity().getTourSubcategoryEntity(),
+                savedBookingEntity.getTourEntity(),
+                savedBookingEntity.getUserEntity(),
+                savedPassengerEntities
+        );
+    }
+
+    @Override
+    public TourBookingDto getTourBookingById(Long bookingId) {
+        BookingEntity bookingEntity = getBookingEntityById(bookingId);
+        List<PassengerEntity> passengerEntities = getPassengerEntitiesByBookingEntity(bookingEntity);
+        return toTourBookingDto(
+                bookingEntity,
+                bookingEntity.getTourEntity().getTourSubcategoryEntity().getTourCategoryEntity(),
+                bookingEntity.getTourEntity().getTourSubcategoryEntity(),
+                bookingEntity.getTourEntity(),
+                bookingEntity.getUserEntity(),
+                passengerEntities
+        );
+    }
+
+    private List<PassengerEntity> getPassengerEntitiesByBookingEntity(BookingEntity bookingEntity) {
+        return passengerRepository.findAllByBookingEntity(bookingEntity);
+    }
+
+    private BookingEntity getBookingEntityById(Long bookingId) {
+        return bookingRepository.findById(bookingId).orElseThrow(() -> new ApiException("Booking not found"));
+    }
+
     private final BiFunction<String, MultipartFile, String> photoFunction = (tourId, file) -> {
         String fileName = tourId + ".png";
         try {
@@ -91,6 +140,28 @@ public class TourServiceImpl implements TourService {
         tourPriceRepository.save(createTourPriceEntity(savedTourEntity, tourPriceRequest));
     }
 
+    private BookingEntity saveBookingEntity(TourBookingRequest tourBookingRequest) {
+        TourEntity tourEntity = getTourEntityById(tourBookingRequest.getTourId());
+        UserEntity userEntity = getUserEntityById(tourBookingRequest.getUserId());
+        BookingEntity bookingEntity = new BookingEntity();
+        bookingEntity.setBookingDate(LocalDateTime.now());
+        bookingEntity.setBookingStatus(BookingStatus.PENDING);
+        bookingEntity.setTotalPrice(tourBookingRequest.getTotalPrice());
+        bookingEntity.setTourEntity(tourEntity);
+        bookingEntity.setUserEntity(userEntity);
+        return bookingRepository.save(bookingEntity);
+    }
+
+    private List<PassengerEntity> savePassengerEntities(List<PassengerRequest> passengers, BookingEntity savedBookingEntity) {
+        for (PassengerRequest passengerRequest : passengers) {
+            PassengerEntity passengerEntity = createPassengerEntity(passengerRequest);
+            passengerEntity.setBookingEntity(savedBookingEntity);
+            passengerEntity.setTourEntity(savedBookingEntity.getTourEntity());
+            passengerRepository.save(passengerEntity);
+        }
+        return passengerRepository.findAllByBookingEntity(savedBookingEntity);
+    }
+
     private void saveTourItineraries(TourEntity savedTourEntity, List<ItineraryRequest> itineraryRequests) {
         for (ItineraryRequest itineraryRequest : itineraryRequests) {
             itineraryRepository.save(createItineraryEntity(itineraryRequest, savedTourEntity));
@@ -103,5 +174,9 @@ public class TourServiceImpl implements TourService {
 
     private TourSubcategoryEntity getTourSubcategoryEntityById(Long tourSubcategoryId) {
         return tourSubCategoryRepository.findById(tourSubcategoryId).orElseThrow(() -> new ApiException("Tour SubCategory not found"));
+    }
+
+    private UserEntity getUserEntityById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new ApiException("user not found"));
     }
 }

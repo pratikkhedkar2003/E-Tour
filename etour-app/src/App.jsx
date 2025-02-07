@@ -25,6 +25,8 @@ import Footer from "./components/Footer";
 import TourSubCategories from "./pages/TourSubCategories";
 import Tours from "./pages/Tours";
 import TourDetails from "./pages/TourDetails";
+import TourBooking from "./pages/TourBooking";
+import BookingDetails from "./pages/BookingDetails";
 
 function App() {
   const isLoggedIn = JSON.parse(localStorage.getItem(LOGGEDIN)) || false;
@@ -65,6 +67,9 @@ function App() {
           <Route element={<RestrictedRoute />}>
             <Route path={"users"} element={<Users />} />
           </Route>
+
+          <Route path={"/tours/booking/:tourId"} element={<TourBooking />} />
+          <Route path={"/booking/booking-details/:bookingId"} element={<BookingDetails />} />
 
           <Route path={"/user"} element={<User />}>
             <Route path={"/user"} element={<Navigate to={"/user/profile"} />} />

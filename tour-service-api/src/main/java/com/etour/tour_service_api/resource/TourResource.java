@@ -1,7 +1,11 @@
 package com.etour.tour_service_api.resource;
 
+import com.etour.tour_service_api.dto.TourBookingDto;
 import com.etour.tour_service_api.entity.TourEntity;
+import com.etour.tour_service_api.entity.TourReviewEntity;
+import com.etour.tour_service_api.payload.request.TourBookingRequest;
 import com.etour.tour_service_api.payload.request.TourRequest;
+import com.etour.tour_service_api.payload.request.TourReviewRequest;
 import com.etour.tour_service_api.payload.response.Response;
 import com.etour.tour_service_api.service.TourService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,6 +67,24 @@ public class TourResource {
     ) {
         TourEntity tourEntity = tourService.uploadTourImage(tourId, imageFile);
         return ResponseEntity.ok().body(getResponse(request, of("tour", tourEntity), "Tour image uploaded successfully", OK));
+    }
+
+    @PostMapping("/review/create")
+    public ResponseEntity<Response> createTourReview(@RequestBody @Valid TourReviewRequest tourReviewRequest, HttpServletRequest request) {
+        TourReviewEntity tourReviewEntity = tourService.createTourReview(tourReviewRequest);
+        return ResponseEntity.created(getUri()).body(getResponse(request, of("tourReview", tourReviewEntity), "Tour review added successfully", CREATED));
+    }
+
+    @PostMapping("/booking/create")
+    public ResponseEntity<Response> createTourBooking(@RequestBody @Valid TourBookingRequest tourBookingRequest, HttpServletRequest request) {
+        TourBookingDto tourBookingDto = tourService.createTourBooking(tourBookingRequest);
+        return ResponseEntity.created(getUri()).body(getResponse(request, of("tourBooking", tourBookingDto), "Tour booking created successfully", CREATED));
+    }
+
+    @GetMapping("/booking/{bookingId}")
+    public ResponseEntity<Response> getTourBookingById(@PathVariable(value = "bookingId") Long bookingId, HttpServletRequest request) {
+        TourBookingDto tourBookingDto = tourService.getTourBookingById(bookingId);
+        return ResponseEntity.ok().body(getResponse(request, of("tourBooking", tourBookingDto), "Tour booking retrieved", OK));
     }
 
     @GetMapping(path = "/image/{fileName}", produces = { IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE })
