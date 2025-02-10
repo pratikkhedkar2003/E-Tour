@@ -71,4 +71,6 @@ server:
     whitelabel:
       enabled: false
 
+stripe:
+  secret: ${STRIPE_SECRET_API_KEY}
 

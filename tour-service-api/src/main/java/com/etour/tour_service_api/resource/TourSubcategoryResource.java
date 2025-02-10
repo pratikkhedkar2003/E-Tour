@@ -51,13 +51,13 @@ public class TourSubcategoryResource {
     @GetMapping(path = "/list")
     public ResponseEntity<Response> getAllTourCategories(HttpServletRequest request) {
         List<TourSubcategoryDto> tourSubcategories = tourSubCategoryService.getAllTourSubcategories();
-        return ResponseEntity.ok().body(getResponse(request, of("tourSubcategories", tourSubcategories), "Tour categories retrieved", OK));
+        return ResponseEntity.ok().body(getResponse(request, of("tourSubcategories", tourSubcategories), null, OK));
     }
 
     @GetMapping(path = "/tour-category/{tourCategoryId}")
     public ResponseEntity<Response> getAllTourCategoriesByTourCategoryId(@PathVariable(value = "tourCategoryId") Long tourCategoryId, HttpServletRequest request) {
         List<TourSubcategoryDto> tourSubcategories = tourSubCategoryService.getAllTourSubcategoriesByTourCategoryId(tourCategoryId);
-        return ResponseEntity.ok().body(getResponse(request, of("tourSubcategories", tourSubcategories), "Tour categories retrieved", OK));
+        return ResponseEntity.ok().body(getResponse(request, of("tourSubcategories", tourSubcategories), "Tour Sub categories retrieved", OK));
     }
 
     @GetMapping(path = "/image/{fileName}", produces = { IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE })

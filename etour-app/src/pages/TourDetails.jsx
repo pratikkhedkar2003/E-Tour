@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
-  FaCalendarAlt,
   FaClock,
   FaRegStar,
   FaRupeeSign,
@@ -29,6 +28,8 @@ const TourDetails = () => {
   const tours = useSelector((store) => store.toursSlice);
 
   const tour = tours.find((tour) => tour.id === +tourId);
+
+  console.log("tour", tour);
 
   const tourPrice = {
     singlePersonPrice: tour?.tourPrice?.singlePersonPrice,
@@ -72,8 +73,6 @@ const TourDetails = () => {
       tourId: +tourId,
       userId: JSON.parse(localStorage.getItem(USER_ID)) || 0,
     };
-
-    console.log("sahfuygcv7ywgc yucrfr7fg", newReview);
 
     await addTourReview(newReview);
 
@@ -132,9 +131,6 @@ const TourDetails = () => {
               <span className="d-flex align-items-center gap-2">
                 <FaClock /> {tour.duration}
               </span>
-              <span className="d-flex align-items-center gap-2">
-                <FaCalendarAlt /> {tour.startDate} - {tour.endDate}
-              </span>
             </div>
             <p className="mt-3">{tour.description}</p>{" "}
             {/* Added description below dates */}
@@ -185,6 +181,22 @@ const TourDetails = () => {
                     <p className="card-text text-muted">
                       {itinerary.description}
                     </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Departure Section */}
+        <section className="itinerary-section mb-5">
+          <h2 className="mb-4 fw-bold border-bottom pb-2">Tour Departure dates: </h2>
+          <div className="timeline">
+            {tour.departures.map((departure) => (
+              <div key={departure.id} className="timeline-item">
+                <div className="timeline-card card shadow-sm">
+                  <div className="card-body">
+                    <h5 className="card-title">Start Date: {departure.startDate} To End Date: {departure.endDate}</h5>
                   </div>
                 </div>
               </div>

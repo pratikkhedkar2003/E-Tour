@@ -5,6 +5,8 @@ import PassengerForm from "../components/tours/PassengerForm";
 import { FaCheckCircle, FaRupeeSign, FaUsers, FaTimes } from "react-icons/fa";
 import { USER_ID } from "../constants/cache.key";
 import { tourAPI } from "../services/TourService";
+import { CiCalendarDate } from "react-icons/ci";
+import { toastWarning } from "../services/ToastService";
 
 const TourBooking = () => {
   const { tourId } = useParams();
@@ -13,6 +15,7 @@ const TourBooking = () => {
   const tour = tours.find((tour) => tour.id === +tourId);
 
   const [passengers, setPassengers] = useState([]);
+  const [departureId, setDepartureId] = useState(0);
 
   const handlePassengerSubmit = (passenger) => {
     console.log("Passenger data:", passenger);
@@ -28,13 +31,35 @@ const TourBooking = () => {
     tourAPI.useCreateTourBookingMutation();
 
   const handleConfirmBooking = async () => {
-    const booking = {
-      totalPrice: totalCost,
-      tourId: +tourId,
-      userId: JSON.parse(localStorage.getItem(USER_ID)) || 0,
-      passengers: passengers,
-    };
-    await createTourBooking(booking);
+    let childrens = 0;
+    let adults = 0;
+
+    passengers.forEach((passenger) => {
+      if (passenger.age <= 16) {
+        childrens++;
+      } else {
+        adults++;
+      }
+    });
+
+    if (childrens > adults && adults === 0) {
+      toastWarning("Please add adult person");
+      return;
+    }
+
+    if (adults >= childrens || adults * 2 >= childrens) {
+      const booking = {
+        totalPrice: totalCost,
+        tourId: +tourId,
+        departureId: +departureId,
+        userId: JSON.parse(localStorage.getItem(USER_ID)) || 0,
+        passengers: passengers,
+      };
+      console.log("Booking data:", booking);
+      await createTourBooking(booking);
+    } else {
+      toastWarning("Please add adult person");
+    }
   };
 
   const handleDeletePassenger = (index) => {
@@ -58,6 +83,28 @@ const TourBooking = () => {
             </div>
 
             <div className="card-body">
+              <div className="mt-3">
+                <h4 className="mb-4">
+                  <CiCalendarDate className="me-2" />
+                  Select Departure Date:
+                </h4>
+                <select
+                  name="departureId"
+                  id="departureId"
+                  className="form-select"
+                  onChange={(e) => setDepartureId(e.target.value)}
+                >
+                  <option value="">Select Date</option>
+                  {tour?.departures?.map((departure) => (
+                    <option key={departure.id} value={departure.id}>
+                      {departure.startDate} - {departure.endDate}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <br />
+
               <PassengerForm
                 handlePassengerSubmit={handlePassengerSubmit}
                 tour={tour}

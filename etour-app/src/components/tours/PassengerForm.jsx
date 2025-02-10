@@ -9,6 +9,7 @@ import {
   FaMoneyBillWave,
   FaUndo,
 } from "react-icons/fa";
+import { useState } from "react";
 
 const passengerSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -24,6 +25,8 @@ const passengerSchema = z.object({
 });
 
 const PassengerForm = ({ handlePassengerSubmit, tour }) => {
+  const [passengerTypes, setPassengerTypes] = useState([]);
+
   const { register, handleSubmit, formState, reset, getFieldState, setValue } =
     useForm({
       resolver: zodResolver(passengerSchema),
@@ -45,6 +48,7 @@ const PassengerForm = ({ handlePassengerSubmit, tour }) => {
   const handlePassengerSubmitForm = (passenger) => {
     handlePassengerSubmit(passenger);
     reset();
+    setPassengerTypes([]);
   };
 
   const handlePassengerTypeChange = (passengerType) => {
@@ -91,11 +95,50 @@ const PassengerForm = ({ handlePassengerSubmit, tour }) => {
     return age;
   };
 
+  const handleReset = () => {
+    reset();
+    setPassengerTypes([]);
+  }
+
   // Update the age field when date of birth changes
   const handleDateOfBirthChange = (e) => {
+    let passengersType = [];
+
     const dob = e.target.value;
     const age = calculateAge(dob);
     setValue("age", age);
+
+    if (age <= 8) {
+      passengersType = [
+        {
+          name: "Child without Bed",
+          value: "CHILD_WITHOUT_BED",
+        },
+      ];
+    } else if (age > 8 && age <= 16) {
+      passengersType = [
+        {
+          name: "Child with Bed",
+          value: "CHILD_WITH_BED",
+        },
+      ];
+    } else {
+      passengersType = [
+        {
+          name: "Single Person",
+          value: "SINGLE_PERSON",
+        },
+        {
+          name: "Twin Sharing",
+          value: "TWIN_SHARING",
+        },
+        {
+          name: "Extra Person",
+          value: "EXTRA_PERSON",
+        },
+      ];
+    }
+    setPassengerTypes(passengersType);
   };
 
   return (
@@ -287,11 +330,11 @@ const PassengerForm = ({ handlePassengerSubmit, tour }) => {
                   onChange={(e) => handlePassengerTypeChange(e.target.value)}
                 >
                   <option value="">Select Type</option>
-                  <option value="SINGLE_PERSON">Single Person</option>
-                  <option value="TWIN_SHARING">Twin Sharing</option>
-                  <option value="EXTRA_PERSON">Extra Person</option>
-                  <option value="CHILD_WITH_BED">Child with Bed</option>
-                  <option value="CHILD_WITHOUT_BED">Child without Bed</option>
+                  {passengerTypes?.map((type, index) => (
+                    <option key={index} value={type.value}>
+                      {type.name}
+                    </option>
+                  ))}
                 </select>
                 <label htmlFor="passengerType">Passenger Type</label>
                 <div className="invalid-feedback">
@@ -325,7 +368,7 @@ const PassengerForm = ({ handlePassengerSubmit, tour }) => {
               <button
                 type="button"
                 className="btn btn-outline-secondary"
-                onClick={() => reset()}
+                onClick={handleReset}
               >
                 <FaUndo className="me-2" />
                 Reset

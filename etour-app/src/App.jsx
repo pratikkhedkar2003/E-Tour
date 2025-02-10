@@ -27,6 +27,9 @@ import Tours from "./pages/Tours";
 import TourDetails from "./pages/TourDetails";
 import TourBooking from "./pages/TourBooking";
 import BookingDetails from "./pages/BookingDetails";
+import ToursPage from "./pages/ToursPage";
+import SuccessPage from "./pages/SuccessPage";
+import CancelPage from "./pages/CancelPage";
 
 function App() {
   const isLoggedIn = JSON.parse(localStorage.getItem(LOGGEDIN)) || false;
@@ -57,6 +60,11 @@ function App() {
         />
 
         <Route
+          path={"/tours"}
+          element={<ToursPage />}
+        />
+
+        <Route
           path={"/sub-tour-categories/tours/:tourSubCategoryId"}
           element={<Tours />}
         />
@@ -70,6 +78,9 @@ function App() {
 
           <Route path={"/tours/booking/:tourId"} element={<TourBooking />} />
           <Route path={"/booking/booking-details/:bookingId"} element={<BookingDetails />} />
+
+          <Route path={"/payment/success/:bookingReferenceId"} element={<SuccessPage />} />
+          <Route path={"/payment/cancel/:bookingReferenceId"} element={<CancelPage />} />
 
           <Route path={"/user"} element={<User />}>
             <Route path={"/user"} element={<Navigate to={"/user/profile"} />} />

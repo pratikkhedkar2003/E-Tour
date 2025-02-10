@@ -6,7 +6,7 @@ const Footer = () => {
       <div className="container">
         <div className="row g-4">
           <div className="col-lg-4 col-md-6">
-            <h5 className="text-uppercase mb-4 fw-bold">TravelTour</h5>
+            <h5 className="text-uppercase mb-4 fw-bold">E-Tour</h5>
             <p className="text-white">
               Creating unforgettable travel experiences through personalized
               service and expert guidance.
@@ -16,9 +16,16 @@ const Footer = () => {
           <div className="col-lg-4 col-md-6">
             <h5 className="text-uppercase mb-4 fw-bold">Contact Info</h5>
             <ul className="list-unstyled text-white">
-              <li className="mb-2"><i className="bi bi-geo-alt-fill"></i> 123 Travel Street, Tour City</li>
-              <li className="mb-2"><i className="bi bi-telephone-fill"></i> +1 (555) 123-4567</li>
-              <li><i className="bi bi-envelope-fill"></i> info@traveltour.com</li>
+              <li className="mb-2">
+                <i className="bi bi-geo-alt-fill"></i> 123 Travel Street, Tour
+                City
+              </li>
+              <li className="mb-2">
+                <i className="bi bi-telephone-fill"></i> +1 (555) 123-4567
+              </li>
+              <li>
+                <i className="bi bi-envelope-fill"></i> etour@gmail.com
+              </li>
             </ul>
           </div>
 
@@ -44,7 +51,7 @@ const Footer = () => {
         <hr className="my-5 opacity-150" />
 
         <div className="text-center text-white small">
-          <p>&copy; 2025 TravelTour. All rights reserved.</p>
+          <p>&copy; 2025 E-Tour. All rights reserved.</p>
         </div>
       </div>
     </footer>

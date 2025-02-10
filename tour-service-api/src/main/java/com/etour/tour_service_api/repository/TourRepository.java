@@ -16,4 +16,5 @@ import java.util.List;
 @Repository
 public interface TourRepository extends JpaRepository<TourEntity, Long> {
     List<TourEntity> findAllByTourSubcategoryEntity(TourSubcategoryEntity tourSubcategoryEntity);
+    List<TourEntity> findAllByIsPopularTrue();
 }

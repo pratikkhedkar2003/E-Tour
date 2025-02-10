@@ -41,6 +41,14 @@ public class BookingEntity extends Auditable {
     @JsonProperty(value = "tourId")
     private TourEntity tourEntity;
 
+    @ManyToOne(targetEntity = DepartureEntity.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "departure_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @JsonProperty(value = "departureId")
+    private DepartureEntity departureEntity;
+
     @ManyToOne(targetEntity = UserEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

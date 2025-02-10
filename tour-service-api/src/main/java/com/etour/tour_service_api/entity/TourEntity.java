@@ -38,6 +38,7 @@ public class TourEntity extends Auditable {
     private String duration;
     private LocalDate startDate;
     private LocalDate endDate;
+    private boolean isPopular;
 
     @ManyToOne(targetEntity = TourSubcategoryEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "tour_subcategory_id", nullable = false)
@@ -46,6 +47,10 @@ public class TourEntity extends Auditable {
     @JsonIdentityReference(alwaysAsId = true)
     @JsonProperty(value = "tourSubcategoryId")
     private TourSubcategoryEntity tourSubcategoryEntity;
+
+    @OneToMany(mappedBy = "tourEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonProperty(value = "departures")
+    private List<DepartureEntity> departureEntities;
 
     @OneToMany(mappedBy = "tourEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonProperty(value = "itineraries")

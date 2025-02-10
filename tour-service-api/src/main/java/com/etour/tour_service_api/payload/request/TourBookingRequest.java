@@ -21,6 +21,8 @@ public class TourBookingRequest {
     private Long tourId;
     @NotNull(message = "User id cannot be empty or null")
     private Long userId;
+    @NotNull(message = "Departure cannot be empty or null")
+    private Long departureId;
     @NotNull(message = "Total price cannot be empty or null")
     private Double totalPrice;
     @NotNull(message = "Passengers cannot be empty or null")

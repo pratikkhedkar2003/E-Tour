@@ -10,9 +10,12 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import { GiMoneyStack } from "react-icons/gi";
+import { httpPost } from "../constants/http";
+import { useState } from "react";
 
 const BookingDetails = () => {
   const { bookingId } = useParams();
+  const [loading, setLoading] = useState(false);
   const { data, isLoading, isSuccess } =
     tourAPI.useFetchTourBookingByIdQuery(bookingId);
 
@@ -28,6 +31,21 @@ const BookingDetails = () => {
       COMPLETED: "primary",
     };
     return <span className={`badge bg-${statusColors[status]}`}>{status}</span>;
+  };
+
+  const handlePayment = () => {
+    setLoading(true);
+    console.log("Bookind Data", { data });
+    fetch("http://localhost:8085/api/v1/tour-service/payment/checkout/hosted", {
+      credentials: "include",
+      method: httpPost,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data?.data?.tourBooking),
+    })
+      .then((r) => r.text())
+      .then((r) => {
+        window.location.href = r;
+      });
   };
 
   return (
@@ -84,13 +102,8 @@ const BookingDetails = () => {
                     </li>
                     <li>
                       <strong>Dates:</strong>{" "}
-                      {new Date(
-                        data?.data?.tourBooking?.startDate
-                      ).toLocaleDateString()}{" "}
-                      -{" "}
-                      {new Date(
-                        data?.data?.tourBooking?.endDate
-                      ).toLocaleDateString()}
+                      {data?.data?.tourBooking?.startDate} to{"   "}
+                      {data?.data?.tourBooking?.endDate}
                     </li>
                     <li>
                       <strong>Category:</strong>{" "}
@@ -176,9 +189,7 @@ const BookingDetails = () => {
                             {passenger.firstName} {passenger.middleName}{" "}
                             {passenger.lastName}
                           </td>
-                          <td>
-                            {passenger.gender}
-                          </td>
+                          <td>{passenger.gender}</td>
                           <td>{passenger.age}</td>
                           <td>
                             {new Date(
@@ -203,9 +214,18 @@ const BookingDetails = () => {
             <div className="text-center mt-4">
               <button
                 className="btn btn-success btn-lg px-5 py-3"
-                onClick={() => console.log("Initiating payment...")}
+                onClick={handlePayment}
+                disabled={loading}
               >
-                <GiMoneyStack className="me-2" /> Pay Now
+                {loading ? (
+                  <span
+                    className="spinner-border spinner-border-sm"
+                    aria-hidden={"true"}
+                  ></span>
+                ) : (
+                  <GiMoneyStack className="me-2" />
+                )}
+                Pay Now
               </button>
             </div>
           )}

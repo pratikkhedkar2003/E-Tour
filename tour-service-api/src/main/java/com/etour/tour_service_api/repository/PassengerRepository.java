@@ -2,7 +2,6 @@ package com.etour.tour_service_api.repository;
 
 import com.etour.tour_service_api.entity.BookingEntity;
 import com.etour.tour_service_api.entity.PassengerEntity;
-import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

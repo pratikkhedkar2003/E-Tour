@@ -34,7 +34,7 @@ public class PassengerEntity extends Auditable {
     private String middleName;
     @Column(length = 50, nullable = false)
     private String lastName;
-    @Column(length = 100, unique = true)
+    @Column(length = 100)
     private String email;
     @Column(length = 20)
     private String phone;

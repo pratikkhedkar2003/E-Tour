@@ -21,9 +21,6 @@ const TourCard = ({ tour }) => {
           <p className="text-muted">
             <strong>Duration:</strong> {tour.duration}
           </p>
-          <p className="text-muted">
-            <strong>Dates:</strong> {tour.startDate} To {tour.endDate}
-          </p>
         </div>
         <div className="card-footer bg-transparent border-0 p-4 pt-0">
           <Link to={`/tours/tour-details/${tour.id}`} className="btn btn-outline-primary w-100">

@@ -104,10 +104,22 @@ public class TourUtils {
                 .tourName(tourEntity.getTourName())
                 .description(tourEntity.getDescription())
                 .duration(tourEntity.getDuration())
-                .startDate(tourEntity.getStartDate().toString())
-                .endDate(tourEntity.getEndDate().toString())
+                .startDate(savedBookingEntity.getDepartureEntity().getStartDate().toString())
+                .endDate(savedBookingEntity.getDepartureEntity().getEndDate().toString())
                 .user(fromUserEntity(userEntity))
                 .passengers(getPassengerDtoList(savedPassengerEntities))
+                .build();
+
+    }
+
+    public static TourBookingDto toTourBookingDto(BookingEntity savedBookingEntity) {
+
+        return TourBookingDto.builder()
+                .id(savedBookingEntity.getId())
+                .referenceId(savedBookingEntity.getReferenceId())
+                .bookingDate(savedBookingEntity.getBookingDate().toString())
+                .bookingStatus(savedBookingEntity.getBookingStatus())
+                .totalPrice(savedBookingEntity.getTotalPrice())
                 .build();
 
     }
